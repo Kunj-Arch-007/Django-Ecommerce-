@@ -36,15 +36,12 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        # Generate order number if it doesn't exist
         if not self.order_number:
-            # Get the latest order number
             last_order = Order.objects.order_by('-id').first()
             if last_order:
                 last_id = last_order.id
             else:
                 last_id = 0
-            # Create new order number
             self.order_number = f'ORD{(last_id + 1):05d}'
         
         super().save(*args, **kwargs)

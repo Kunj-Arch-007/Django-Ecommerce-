@@ -25,12 +25,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Order.objects.all().prefetch_related('order_items', 'order_items__product')
         
-        # Filter by customer name
         customer = self.request.query_params.get('customer', None)
         if customer:
             queryset = queryset.filter(customer__name__icontains=customer)
             
-        # Filter by products (comma-separated list)
         products = self.request.query_params.get('products', None)
         if products:
             product_names = [name.strip() for name in products.split(',')]
@@ -40,7 +38,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         return queryset
     
     def create(self, request, *args, **kwargs):
-        # Parse date in DD/MM/YYYY format if provided
         data = request.data.copy()
         if isinstance(data.get('order_date'), str) and '/' in data.get('order_date', ''):
             try:
@@ -59,7 +56,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def update(self, request, *args, **kwargs):
-        # Parse date in DD/MM/YYYY format if provided
         data = request.data.copy()
         if isinstance(data.get('order_date'), str) and '/' in data.get('order_date', ''):
             try:
